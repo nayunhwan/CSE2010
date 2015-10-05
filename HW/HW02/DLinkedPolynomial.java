@@ -61,26 +61,31 @@ public class DLinkedPolynomial implements Polynomial {
 
 
 	public DLinkedPolynomial(Polynomial p){
-		// tail = new Node(null, null, null);
-		// head = new Node(null, null, tail);
-		// tail.setPrev(head);
+		tail = new Node(null, null, null);
+		head = new Node(null, null, tail);
+		tail.setPrev(head);
 
-		// int p_degree = p.getDegree();
+		int p_degree = p.getDegree();
+		System.out.println(p_degree);
+		for(int i = p_degree; i >= 0; i--){
 
-		// for(int i = p_degree; i >= 0; i--){
+			double p_coeff = p.getCoefficient(i);
+			System.out.println(p_coeff);
 
-		// 	double p_coeff = getCoefficient(i);
-		// 	if(p_coeff != 0){
-		// 		System.out.println("???");
-		// 		attach(new Term(p_coeff, i));
-		// 	}
-		// }
+			if(p_coeff != 0){
+				System.out.println("???");
+				attach(new Term(p_coeff, i));
+			}
+
+
+		}
 
 		// p.printMe();
 
-		tail = p.getTail();
-		head = p.getHead();
+		// tail = p.getTail();
+		// head = p.getHead();
 	}
+
 
 	public boolean isEmpty(){
 		if(getHead().getNext() == getTail()) return true;
