@@ -66,17 +66,16 @@ public class DLinkedPolynomial implements Polynomial {
 		tail.setPrev(head);
 
 		int p_degree = p.getDegree();
-		System.out.println(p_degree);
+		// System.out.println(p_degree);
 		for(int i = p_degree; i >= 0; i--){
 
 			double p_coeff = p.getCoefficient(i);
-			System.out.println(p_coeff);
+			// System.out.println(p_coeff);
 
 			if(p_coeff != 0){
-				System.out.println("???");
+				// System.out.println("???");
 				attach(new Term(p_coeff, i));
 			}
-
 
 		}
 
@@ -107,17 +106,25 @@ public class DLinkedPolynomial implements Polynomial {
 		return getTail().getPrev();
 	}
 
-	public void removeNode(int expo){
-		Node node = getFirst();
-		while(node != getTail()){
-			if(node.getElement().expo == expo){
-				node.getPrev().setNext(node.getNext());
-				node.getNext().setPrev(node.getPrev());
-				return;
-			}
-			node = node.getNext();
-		}
+	public void setHead(Node node){
+		this.head = node;
 	}
+
+	public void setTail(Node node){
+		this.tail = node;
+	}
+
+	// public void removeNode(int expo){
+	// 	Node node = getFirst();
+	// 	while(node != getTail()){
+	// 		if(node.getElement().expo == expo){
+	// 			node.getPrev().setNext(node.getNext());
+	// 			node.getNext().setPrev(node.getPrev());
+	// 			return;
+	// 		}
+	// 		node = node.getNext();
+	// 	}
+	// }
 
 	public void addAfter(Node prev, Node node){
 		node.setNext(prev.getNext());
@@ -149,31 +156,76 @@ public class DLinkedPolynomial implements Polynomial {
 	}
 	
 	public Polynomial padd(Polynomial p) {
-		
-		DLinkedPolynomial dlink_p = new DLinkedPolynomial(p);
 
-		Node node = getFirst();
-		Node p_node = dlink_p.getFirst();
+		DLinkedPolynomial dLinked_p = new DLinkedPolynomial(p);
 
-		while(node != getTail()){
-			if(p_node == dlink_p.getTail()) System.out.println("망");
-			while(p_node != dlink_p.getTail()){
-				if(node.getElement().expo != p_node.getElement().expo){
-					attach(p_node.getElement());
-					dlink_p.removeNode(p_node.getElement().expo);
+		Node p_node = dLinked_p.getFirst();
+		while(p_node != dLinked_p.getTail()){
+			Node node = getFirst();
+			boolean isIn = false;
+
+			Term p_curTerm = p_node.getElement();
+			while(node != getTail()){
+				Term curTerm = node.getElement();
+
+				if(curTerm.expo == p_curTerm.expo){
+					curTerm.coeff += p_curTerm.coeff;
+					isIn = true;
+					break;
 				}
-				else{
-					node.getElement().coeff += dlink_p.getCoefficient(p_node.getElement().expo);
-				}
+
+				node = node.getNext();
 			}
 
-			node = node.getNext();
+			if(!isIn) attach(p_curTerm);
+
+			p_node = p_node.getNext();
 		}
+
+
+
 		return this;
 		// Complete here ...
 	}
 	
-	public Polynomial pmult(Polynomial p) {	
+	public Polynomial pmult(Polynomial p) {
+
+		DLinkedPolynomial dLinked_p = new DLinkedPolynomial(p);
+		DLinkedPolynomial result = new DLinkedPolynomial();
+		
+
+		Node node = getFirst();
+		while(node != getTail()){
+			Node p_node = dLinked_p.getFirst();
+			Term curTerm = node.getElement();
+			
+
+			while(p_node != dLinked_p.getTail()){
+				Term p_curTerm = p_node.getElement();
+				boolean isIn = false;
+
+				Node result_node = result.getFirst();
+				while(result_node != result.getTail()){
+					Term result_curTerm = result_node.getElement();
+
+					if(result_node.getElement().expo == curTerm.expo + p_curTerm.expo){
+						result_curTerm.coeff += curTerm.coeff * p_curTerm.coeff;
+						isIn = true;
+						break;
+					}
+
+					result_node = result_node.getNext();
+				}
+
+				if(!isIn) result.attach(new Term(curTerm.coeff * p_curTerm.coeff, curTerm.expo + p_curTerm.expo));	
+				p_node = p_node.getNext();
+			}
+
+			node = node.getNext();
+		}
+
+		setHead(result.getHead());
+		setTail(result.getTail());
 		return this;
 		// Complete here ...
 	}
