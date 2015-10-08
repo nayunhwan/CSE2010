@@ -60,30 +60,30 @@ public class DLinkedPolynomial implements Polynomial {
 	}
 
 
-	public DLinkedPolynomial(Polynomial p){
-		tail = new Node(null, null, null);
-		head = new Node(null, null, tail);
-		tail.setPrev(head);
+	// public DLinkedPolynomial(Polynomial p){
+	// 	tail = new Node(null, null, null);
+	// 	head = new Node(null, null, tail);
+	// 	tail.setPrev(head);
 
-		int p_degree = p.getDegree();
-		// System.out.println(p_degree);
-		for(int i = p_degree; i >= 0; i--){
+	// 	int p_degree = p.getDegree();
+	// 	// System.out.println(p_degree);
+	// 	for(int i = p_degree; i >= 0; i--){
 
-			double p_coeff = p.getCoefficient(i);
-			// System.out.println(p_coeff);
+	// 		double p_coeff = p.getCoefficient(i);
+	// 		// System.out.println(p_coeff);
 
-			if(p_coeff != 0){
-				// System.out.println("???");
-				attach(new Term(p_coeff, i));
-			}
+	// 		if(p_coeff != 0){
+	// 			// System.out.println("???");
+	// 			attach(new Term(p_coeff, i));
+	// 		}
 
-		}
+	// 	}
 
-		// p.printMe();
+	// 	// p.printMe();
 
-		// tail = p.getTail();
-		// head = p.getHead();
-	}
+	// 	// tail = p.getTail();
+	// 	// head = p.getHead();
+	// }
 
 
 	public boolean isEmpty(){
@@ -157,7 +157,9 @@ public class DLinkedPolynomial implements Polynomial {
 	
 	public Polynomial padd(Polynomial p) {
 
-		DLinkedPolynomial dLinked_p = new DLinkedPolynomial(p);
+		// DLinkedPolynomial dLinked_p = new DLinkedPolynomial(p);
+		DLinkedPolynomial dLinked_p = (DLinkedPolynomial) p;
+
 
 		Node p_node = dLinked_p.getFirst();
 		while(p_node != dLinked_p.getTail()){
@@ -190,7 +192,8 @@ public class DLinkedPolynomial implements Polynomial {
 	
 	public Polynomial pmult(Polynomial p) {
 
-		DLinkedPolynomial dLinked_p = new DLinkedPolynomial(p);
+		// DLinkedPolynomial dLinked_p = new DLinkedPolynomial(p);
+		DLinkedPolynomial dLinked_p = (DLinkedPolynomial) p;
 		DLinkedPolynomial result = new DLinkedPolynomial();
 		
 
