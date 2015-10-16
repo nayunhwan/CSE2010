@@ -7,7 +7,9 @@ public class Run{
 		for(int i = 0; i < 20; i++){
 			int rndInt = (int)(Math.random()*10)+1;
 			list1.insert(0, rndInt);
+			// list1.insert(i, rndInt);
 		}
+
 
 		list1.print_list_forward(1);
 		list1.print_list_backward(1); 
