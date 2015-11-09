@@ -66,17 +66,19 @@ public class Maze {
    * Complete the following recursive method.
    */	
 	private boolean moveTo(int row, int col) {
-		// System.out.println("("+row+", "+col+")");
 		_stack.push(new Location(row, col));
 		marked[row][col] = true;
+
+		// 마지막 탈출구에 도착했을 경우 true 리턴
 		if(row == finalI && col == finalJ) return true;
-		// 상
+		
+		// 상 방향 탐색
 		if(row-1 >= 0 && row-1 <= finalI && myMaze[row-1][col] == 0 && !marked[row-1][col] && !marked[finalI][finalJ]) moveTo(row-1, col);
-		// 우
+		// 우 방향 탐색
 		if(col+1 >= 0 && col+1 <= finalJ && myMaze[row][col+1] == 0 && !marked[row][col+1] && !marked[finalI][finalJ]) moveTo(row, col+1);
-		// 하
+		// 하 방향 탐색
 		if(row+1 >= 0 && row+1 <= finalI && myMaze[row+1][col] == 0 && !marked[row+1][col] && !marked[finalI][finalJ]) moveTo(row+1, col);
-		// 좌
+		// 좌 방향 탐색
 		if(col-1 >= 0 && col-1 <= finalJ && myMaze[row][col-1] == 0 && !marked[row][col-1] && !marked[finalI][finalJ]) moveTo(row, col-1);
 
 		if(!marked[finalI][finalJ]) _stack.pop();
