@@ -3,6 +3,7 @@ class Queue{
 	private Node head;
 	private Node tail;
 
+	// Double Linked List를 위한 Node Class
 	private class Node{
 
 		private char data;

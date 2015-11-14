@@ -8,25 +8,25 @@ class Run{
 			queue.Enqueue(s.charAt(i));
 		}
 
-		// while(!queue.empty()){
-		// 	char getChar = queue.Dequeue();
+		while(!queue.empty()){
+			char getChar = queue.Dequeue();
 
-		// 	if(getChar == '(') stack.push(getChar);
-		// 	else if(getChar == ')'){
-		// 		if(stack.empty()){
-		// 			System.out.println("\nError!");
-		// 			return;
-		// 		}
-		// 		stack.pop();	
-		// 	} 
+			if(getChar == '(') stack.push(getChar);
+			else if(getChar == ')'){
+				if(stack.empty()){
+					System.out.println("\nError!");
+					return;
+				}
+				stack.pop();	
+			} 
 
-		// 	System.out.print(getChar);
-		// }
+			System.out.print(getChar);
+		}
 
-		// if(!stack.empty()) System.out.println("\nError!");
-		// else System.out.println();
+		if(!stack.empty()) System.out.println("\nError!");
+		else System.out.println("\nOK");
 
-		queue.printQueue();
+		// queue.printQueue();
 	}
 
 
