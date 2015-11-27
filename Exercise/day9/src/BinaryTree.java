@@ -58,15 +58,19 @@ class BinaryTree{
 
 	public void delete(int key){
 		Node selectNode = search(key);
-		Node parent = null;
+		Node parent = root;
+
+		if(selectNode != root){
+			while(!(parent.lchild == selectNode || parent.rchild == selectNode)){
+				if(parent.key > key) parent = parent.lchild;
+				else parent = parent.rchild;
+			}
+		}
+
 		Node curNode = null;
 
 		// selectNode에 자식노드가 없을 때 즉 리프노드일 경우
 		if(selectNode.lchild == null && selectNode.rchild == null){
-			// selectNode가 parentNode의 왼쪽 자식인지, 오른쪽 자식인지 비교 후, 삭제
-			// if(selectNode.parent.lchild == selectNode) selectNode.parent.lchild = null;
-			// else if(selectNode.parent.rchild == selectNode) selectNode.parent.rchild = null;
-			// return;
 			selectNode = null;
 			return;
 		}
@@ -74,31 +78,38 @@ class BinaryTree{
 
 		// selectNode가 노드를 모두 가지고 있을 경우
 		if(selectNode.lchild != null && selectNode.rchild != null){
+			Node curParent = selectNode;
 			curNode = selectNode.lchild;
 			while(curNode.rchild != null){
+				curParent = curNode;
 				curNode = curNode.rchild;
 			}
 
-			curNode.parent.rchild = curNode.lchild;
+			curParent.rchild = curNode.lchild;
 		}
 
 		// selectNode가 왼쪽노드는 가지고 있고, 오른쪽노드는 없는 경우
 		else if(selectNode.lchild != null && selectNode.rchild == null){
+			Node curParent = selectNode;
 			curNode = selectNode.lchild;
 			while(curNode.lchild != null){
+				curParent = curNode;
 				curNode = curNode.lchild;
+
 			}
-			curNode.parent.lchild = curNode.rchild;
+			curParent.lchild = curNode.rchild;
 			
 		}
 
 		// selectNode가 오른쪽노드는 가지고 있고, 왼쪽노드는 없는 경우
 		else if(selectNode.lchild == null && selectNode.rchild != null){
+			Node curParent = selectNode;
 			curNode = selectNode.rchild;
 			while(curNode.rchild != null){
+				curParent = curNode;
 				curNode = curNode.rchild;
 			}
-			curNode.parent.rchild = curNode.lchild;
+			curParent.rchild = curNode.lchild;
 			
 		}
 
@@ -107,17 +118,13 @@ class BinaryTree{
 			root = curNode;	
 		}
 		else if(selectNode != root){
-			if(selectNode.parent.lchild == selectNode) selectNode.parent.lchild = curNode;
-			else if(selectNode.parent.rchild == selectNode) selectNode.parent.rchild = curNode;	
+			if(parent.lchild == selectNode) parent.lchild = curNode;
+			else if(parent.rchild == selectNode) parent.rchild = curNode;	
 		}
 		
 
 		curNode.lchild = selectNode.lchild;
 		curNode.rchild = selectNode.rchild;
-
-		if(selectNode.lchild != null) selectNode.lchild.parent = curNode;
-		if(selectNode.rchild != null) selectNode.rchild.parent = curNode;
-
 
 	}
 
