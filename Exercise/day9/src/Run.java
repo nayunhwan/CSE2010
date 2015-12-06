@@ -24,6 +24,8 @@ class Run{
 
 		System.out.println("Preorder");
 		tree.print_preorder(tree.root);
+		System.out.println("Inorder");
+		tree.print_inorder(tree.root);
 		System.out.println();
 
 		

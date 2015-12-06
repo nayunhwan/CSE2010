@@ -1,4 +1,6 @@
-class AVL{
+class Avl{
+
+	Node root;
 	private class Node{
 		Node lchild;
 		Node rchild;
@@ -11,8 +13,17 @@ class AVL{
 		}
 	}
 
-	public void insert(int key){
+	Avl(){
+		this.root = null;
+	}
 
+	public void insert(int key){
+		Node curNode = root;
+		while(curNode != null){
+			if(key < curNode.key) curNode = curNode.lchild;
+			else curNode = curNode.rchild;
+		}
+		curNode = new Node(key);
 	}
 
 	public void delete(int key){
