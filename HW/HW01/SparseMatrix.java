@@ -1,229 +1,181 @@
-import java.io.*;
-import java.util.*;
+import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
+import java.util.Arrays;
+import java.util.Comparator;
+import java.util.Scanner;
+import java.util.stream.Collectors;
 
-// Sparse Matrix ADT 
-public class SparseMatrix  {
+//Sparse Matrix ADT
+public class SparseMatrix {
+
 	// nested class for each non-zero entry in Sparse Matrix
+    class Entry {
+        public int row, col, value;
 
-	ArrayList<Entry> entrys = new ArrayList<Entry>();
-	int max_x, max_y, count;
+        @Override
+        public String toString() {
+            return "Entry{" +
+                "row=" + row +
+                ", col=" + col +
+                ", value=" + value +
+                '}';
+        }
 
-	class Entry {
-		int row;
-		int col;
-		double value;
-		
-		Entry(int r, int c, double v) {
-			row = r; col = c; value = v;
-		}
-		
-		void printMe() {
-			System.out.println(row + " " + col + " " + value);
-		}
-	}
-		
-	/*
-	 * You can define additional private fields and/or methods here, if necessary.
-	 */
-	
-	public void entry_swap(int index_i, int index_j){
-		Entry tmp = entrys.get(index_i);
-		entrys.set(index_i, entrys.get(index_j));
-		entrys.set(index_j, tmp);
-	}
+        public Entry(int row, int col, int value) {
+            this.row = row;
+            this.col = col;
+            this.value = value;
+        }
+    }
 
-	// Row 순으로 정렬하고, 구간을 잘라서 구간별로 Col을 기준으로 정렬
-	public void entry_sort(){
-		// row 정렬
-		for(int i = 0; i < entrys.size() - 1; i++){
-			for(int j = 0; j < entrys.size() - 1 - i; j++){
-				if(entrys.get(j).row > entrys.get(j+1).row){
-					entry_swap(j,j+1);
-				}
-			}
-		}
+    private int rowCount;
+    private int colCount;
+    private int entryCount;
+    private Entry[] data;
+    private int nextSlot;
 
+    private SparseMatrix(int rowCount, int colCount, int entryCount) {
+        this.rowCount = rowCount;
+        this.colCount = colCount;
+        this.entryCount = entryCount;
 
-		int front = 0;
-		int back = 0;
+        data = new Entry [entryCount];
+        nextSlot = 0;
+    }
 
-		// col 정렬
-		for(int i = 0; i < entrys.size()-1; i++){
-			if(entrys.get(i).row != entrys.get(i+1).row){
-
-				back = i+1;
-				entry_sort_part(front, back);
-				front = back;
-			}
-		}
-		back = entrys.size();
-		entry_sort_part(front, back);
-	}
-
-	public void entry_sort_part(int front, int back){
-		// System.out.println("back2 "+(back-1));
-		// System.out.println("front : "+front+" back : "+back);
-		int count = 0;
-		for(int i = front; i < back-1; i++){
-			for(int j = front; j < back-1 - (i-front); j++){
-				if(entrys.get(j).col > entrys.get(j+1).col){
-					// System.out.println("swap : "+j+" "+(j+1));
-					entry_swap(j,j+1);
-				}
-			}
-			// System.out.println();
-		}
-	}
-	
-	
-	/*
+    /*
 	 * Construct a sparse matrix by reading data from a specified file
 	 */
-	public SparseMatrix(String filename) {
-		try{
-			BufferedReader br = new BufferedReader(new FileReader(filename));
-			// int x = 0;
+    public static SparseMatrix create(String filename) throws IOException {
+        Path path = Paths.get(filename);
+        if (!Files.exists(path))
+            throw new IllegalArgumentException("No such file");
 
-			String first_line = br.readLine();
-			String first_element[] = first_line.split(" ");
+        SparseMatrix matrix = null;
+        int row, col, count, value;
+        try (Scanner scanner = new Scanner(path)) {
+            row = scanner.nextInt();
+            col = scanner.nextInt();
+            count = scanner.nextInt();
+            matrix = new SparseMatrix(row, col, count);
 
-			max_x = Integer.parseInt(first_element[0]);
-			max_y = Integer.parseInt(first_element[1]);
-			count = Integer.parseInt(first_element[2]);
+            for (int i = 0; i < count; i++) {
+                row = scanner.nextInt();
+                col = scanner.nextInt();
+                value = scanner.nextInt();
+                matrix.put(row, col, value);
+            }
+        };
 
-			// entrys = new Entry[count];
+        return matrix;
+    }
 
-			for(int i = 0; i < count; i++){
-				String line = br.readLine();
-				String lines[] = line.split(" ");
-				int row = Integer.parseInt(lines[0]);
-				int col = Integer.parseInt(lines[1]);
-				double value = Math.round(Float.parseFloat(lines[2])*100d)/100d;
-				entrys.add(new Entry(row, col, value));
-
-			}
-		}
-		catch(Exception ex){
-			System.out.println(ex);
-		}
-	}
-
-	/*
-	 * Transpose this matrix
+    /*
+	 * You can define additional private fields and/or methods here, if necessary.
 	 */
-	public void transpose() {
-
-		int temp  = max_x;
-		max_x = max_y;
-		max_y = temp;
-
-		for(Entry i : entrys){
-			temp = i.row;
-			i.row = i.col;
-			i.col = temp;
-		}
-
-		// // row 정렬
-		// for(int i = 0; i < count - 1; i++){
-		// 	for(int j = 0; j < count - 1 - i; j++){
-		// 		if(entrys.get(j).row > entrys.get(j+1).row){
-		// 			Entry tmp = entrys.get(j);
-		// 			entrys.set(j, entrys.get(j+1));
-		// 			entrys.set(j+1, tmp);
-		// 		}
-		// 	}
-		// }
-
-
-		// int front = 0;
-		// int back = 0;
-
-		// // col 정렬
-
-		// for(int i = 0; i < count - 1; i++){
-		// 	if(entrys.get(i).row != entrys.get(i+1).row){
-		// 		back = i+1;
-		// 		entry_sort_part(front, back);
-		// 		front = back;
-		// 	}
-		// }
-		entry_sort();
+    
+    private void put(int row, int col, int value) {
+    	data[nextSlot++] = new Entry(row, col, value);
 	}
-	
-	
-	/*
-	 * Add this matrix with another matrix m.
+
+    /*
+	 * Add this matrix with another matrix other.
 	 * Assume that the dimensions of two matrices are always compatible.
 	 */
-	public void addTo(SparseMatrix m) {
-		// int min_count = (m.count > count)? count : m.count;
-		// int max_count = (m.count > count)? m.count : count;
+	public SparseMatrix add(SparseMatrix other) {
 
-		// for(int i = 0; i < count; i++){
-		// 	for(int j = 0; j < m.count; j++){
-		// 		if(entrys.get(i).row == m.entrys.get(j).row && entrys.get(i).col == m.entrys.get(j).col){
-		// 			entrys.get(i).value += m.entrys.get(j).value;
-		// 		}
-		// 	}
-		// }
+		int newRowCount = this.rowCount;
+		int newColCount = this.colCount;
+		int newEntryCount = this.entryCount + other.entryCount;
+		int newMatrix[][] = new int[newRowCount][newColCount];
 
-		for(int i = 0; i < m.count; i++){
-			boolean flag = false;
-			for(int j = 0; j < count; j++){
-				// A행렬의 원소와 B행렬의 원소 비교
-				if(entrys.get(j).row == m.entrys.get(i).row && entrys.get(j).col == m.entrys.get(i).col){
-					entrys.get(j).value += m.entrys.get(i).value;
-					flag = true;
-					break;
-				}
-			}
-			// A행렬에 B행렬 원소가 없을 경우 A행렬에 B행렬 원소 추가
-			if(!flag){
-				entrys.add(m.entrys.get(i));
-			}
+		for(int i = 0; i < this.entryCount; i++){
+			Entry currentEntry = data[i];
+			newMatrix[currentEntry.row][currentEntry.col] += currentEntry.value;
 		}
 
-		entry_sort();
-	}
+		for(int i = 0; i < other.entryCount; i++){
+			Entry currentEntry = other.data[i];
+			// 중복된 행열값을 갖는 Entry가 있을 경우 newEntryCount를 1만큼 감소
+			if(newMatrix[currentEntry.row][currentEntry.col] != 0) newEntryCount--;
+			newMatrix[currentEntry.row][currentEntry.col] += currentEntry.value;
+			// 연산 후, Entry의 Value가 0 이 되었을 경우에는, 무의미한 값이므로 newEntryCount를 다시 한번 감소
+			if(newMatrix[currentEntry.row][currentEntry.col] == 0) newEntryCount--;
+		}
+
+		SparseMatrix matrix = new SparseMatrix(newRowCount, newColCount, newEntryCount);
+
+		for(int i = 0; i < this.rowCount; i++)
+			for(int j = 0; j < this.colCount; j++)
+				if(newMatrix[i][j] != 0) matrix.put(i, j, newMatrix[i][j]);	
 	
+		return matrix;
+    }
+
 	/*
-	 * Print contents of this matrix
+	 * Transpose matrix
 	 */
-	public void printMe() {
-		for(Entry i : entrys){
-			i.printMe();	
-		}
-		
-		// for(int i = 0; i < max_x; i++){
-		// 	for(int j = 0; j < max_y; j++){
-		// 		boolean flag = false;
-		// 		for(Entry e : entrys){
-		// 			if(e.row == i && e.col == j){
-		// 				flag = true;
-		// 				System.out.print(e.value+" ");
-		// 				break;
-		// 			}
-		// 		}
+    public SparseMatrix transpose() {
+    	//Transpose Matrix이기 때문에 row와 col의 크기 선언을 반대로 해준다.
+    	int newRowCount = this.colCount;
+    	int newColCount = this.rowCount;
+    	int newMatrix[][] = new int[newRowCount][newColCount];
 
-		// 		if(!flag){
-		// 			System.out.print(0f+" ");
-		// 		}
-		// 	}
-		// 	System.out.println();
-		// }
-		// int index = 0;
-		// for(int i = 0; i < max_x; i++){
-		// 	for(int j = 0; j < max_y; j++){
-		// 		if(entrys.get(index).row == i && entrys.get(index).col == j){
-		// 			System.out.print(entrys.get(index).value+" ");
-		// 			if(index < count-1) index++;
-		// 		}
-		// 		else{
-		// 			System.out.print(0f+" ");
-		// 		}
-		// 	}
-		// 	System.out.println();
-		// }
+    	for(int i = 0; i < this.entryCount; i++){
+    		Entry currentEntry = this.data[i];
+    		newMatrix[currentEntry.col][currentEntry.row] = currentEntry.value;
+    	}
 
-	}
+    	//Transpose를 하더라도 entryCount에는 변함이 없으므로 this.entryCount로 선언한다.
+    	SparseMatrix matrix = new SparseMatrix(newRowCount, newColCount, this.entryCount);
+
+    	for(int i = 0; i < newRowCount; i++)
+    		for(int j = 0; j < newColCount; j++)
+    			if(newMatrix[i][j] != 0) matrix.put(i, j, newMatrix[i][j]);
+
+    	return matrix;
+    }
+
+    public void print() {
+    	System.out.println(this);
+    }
+    
+    @Override
+    public String toString() {
+        StringBuilder builder = new StringBuilder();
+        builder.append(rowCount + ", " + colCount + ", " + entryCount + "\n");
+        for (int i = 0; i < entryCount; i++) {
+            builder.append(data[i].row + ", " + data[i].col + ", " + data[i].value + "\n");
+        }
+        return builder.toString();
+    }
+
+		/*
+		 * DO NOT MODIFY CODE BELOW!!!!!
+		 */
+    public static void main(String... args) throws IOException {
+        if (args[0].equals("p")) { // Print current matrix
+            System.out.println("Printing a matrix: " + args[1]);
+            SparseMatrix m = SparseMatrix.create(args[1]);
+            m.print();
+        } else if (args[0].equals("a")) { // Add two matrices
+            System.out.println("Adding two matrices: " + args[1] + " and " + args[2] + "\n");
+            SparseMatrix A = SparseMatrix.create(args[1]);
+            System.out.println("Matrix A = \n" + A);
+            SparseMatrix B = SparseMatrix.create(args[2]);
+            System.out.println("Matrix B = \n" + B);
+
+            System.out.println("Matrix A + B = \n" + A.add(B));
+        } else if (args[0].equals("t")) {   // Transpose a matrix
+            System.out.println("Transposing a matrix: " + args[1]);
+            SparseMatrix matrix = SparseMatrix.create(args[1]);
+            System.out.println(matrix);
+            SparseMatrix transposedMatrix = matrix.transpose();
+            System.out.println("Transposed Matrix = \n" + transposedMatrix);
+        } else {
+            System.err.println("Unknown operation ...");
+        }
+    }
 }
